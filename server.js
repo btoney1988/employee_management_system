@@ -12,6 +12,7 @@ const connection = mysql.createConnection({
 connection.connect(function (err) {
   if (err) throw err;
 
+  console.log("Server listening")
   start();
 });
 
@@ -24,10 +25,10 @@ function start() {
       choices: [
         "Add a Department",
         "Add a Role",
-        "Add an Employees",
-        "View Departments",
-        "View Roles",
-        "View Employees",
+        "Add an Employee",
+        "Veiw employees by department",
+        "View employees by role",
+        "View all employees",
         "Update Roles",
         "Exit",
       ]
@@ -43,13 +44,13 @@ function start() {
         case "Add an Employee":
           addEmployee();
           break;
-        case "View Departments":
+        case "Veiw employee by department":
           viewDepartments();
-          break;
-        case "View Roles":
+          breaks;
+        case "View employees by roles":
           viewRoles();
           break;
-        case "View Employees":
+        case "View all employees":
           viewEmployees();
           break;
         case "Update Roles":
@@ -87,7 +88,7 @@ function addDepartment() {
 function addRole() {
   connection.query(
     `SELECT department.name, department.id 
-     FROM employee_managmentDB.department`,
+     FROM employee_managementDB.department`,
 
     function (err, data) {
       if (err) throw err;
@@ -120,7 +121,7 @@ function addRole() {
           },
         ])
         .then(function (answer) {
-          const department_id;
+          let department_id;
           for (let i = 0; i < data.length; i++) {
             if (data[i].name === answer.department) {
               department_id = data[i].id;
@@ -182,7 +183,7 @@ function addEmployee() {
         ])
         .then(function (answer) {
           console.log(answer.role);
-          const role_id;
+          let role_id;
           for (let i = 0; i < data.length; i++) {
             if (data[i].title === answer.role) {
               role_id = data[i].id;
@@ -293,6 +294,21 @@ function viewRoles() {
     });
 };
 
+function viewEmployees() {
+  connection.query(
+    `SELECT employee.first_name, employee.last_name, role.salary, role.title, department.name as "Department Name"
+     FROM employee_managementDB.employee
+     INNER JOIN role ON employee.role_id = role.id
+     INNER JOIN department ON role.department_id = department.id`,
+
+    function (err, data) {
+      if (err) throw err;
+
+      console.table(data);
+      questions();
+    }
+  );
+}
 function updateRoles() {
   connection.query(
     `SELECT employee.first_name, employee.last_name, role.salary, role.title, role.id, department.name as "Department Name"
@@ -342,7 +358,7 @@ function updateRoles() {
                   }
                 ])
                 .then(function (answer2) {
-                  const role_id, employee_id;
+                  let role_id, employee_id;
 
                   connection.query(
                     `SELECT employee.first_name, employee.last_name, employee.id
