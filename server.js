@@ -79,6 +79,66 @@ function addDepartment() {
           if (err) throw err;
           console.log(`New ${answer.name} department created!`)
           start();
-        })
-    })
-}
+        });
+    });
+};
+
+function addRole() {
+  connection.query(
+    "SELECT department.name, department.id FROM employee_managmentDB.department",
+    function (err, data) {
+      if (err) throw err;
+
+      inquirer
+        .prompt([
+          {
+            name: "department",
+            type: "list",
+            choices: function () {
+              const departmentArr = [];
+              const departmentArrID = [];
+              for (let i = 0; i < data.length; i++) {
+                departmentArr.push(data[i].name);
+                departmentArrID.push(data[i].id);
+              }
+              return departmentArr;
+            },
+            message: "Which department?"
+          },
+          {
+            name: "title",
+            type: "input",
+            message: "Please input role name"
+          },
+          {
+            name: "salary",
+            type: "input",
+            message: "Please input salary"
+          },
+        ])
+        .then(function (answer) {
+          const department_id = answer.department;
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].name === answer.department) {
+              department_id = data[i].id;
+              console.log(department_id);
+            }
+          }
+
+          connection.query(
+            "INSERT INTO role SET ?",
+            {
+              title: answer.title,
+              salary: answer.salary,
+              department_id: department_id
+            },
+            function (err) {
+              if (err) throw err;
+
+              console.log(`${answer.title} with salary of ${answer.salary} in ${department_id} was created!`)
+              start();
+            }
+          );
+        });
+    });
+};
