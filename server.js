@@ -242,3 +242,45 @@ function viewDepartments() {
 
     });
 };
+
+function viewRoles() {
+  connection.query(
+    `SELECT role.title 
+     FROM employee_managementDB.role`,
+    function (err, data) {
+      if (err) throw err;
+
+      inquirer
+        .prompt([
+          {
+            name: "role",
+            type: "list",
+            message: "Please choose a role.",
+            choices: function () {
+              const roleArr = [];
+              for (let i = 0; i < data.length; i++) {
+                roleArr.push(data[i].title);
+              }
+              return roleArr;
+            }
+          },
+        ])
+        .then(function (answer) {
+          console.log(answer.role);
+
+          connection.query(
+            `SELECT employee.first_name, employee.last_name, role.salary, role.title, department.name as "Department Name"
+             FROM employee_trackerDB.employee
+             INNER JOIN role ON employee.role_id = role.id
+             INNER JOIN department ON role.department_id = department.id
+             WHERE role.title LIKE "${answer.choice}"`,
+            function (err, data) {
+              if (err) throw err;
+
+              console.table(data);
+              start();
+            }
+          );
+        });
+    });
+};
