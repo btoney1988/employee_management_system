@@ -20,7 +20,7 @@ function start() {
     .prompt({
       type: "list",
       name: "command",
-      message: "Choose below.",
+      message: "What would you like to do?",
       choices: [
         "Add a Department",
         "Add a Role",
@@ -61,3 +61,24 @@ function start() {
       }
     });
 };
+
+function addDepartment() {
+  inquirer
+    .prompt([
+      {
+        name: "name",
+        type: "input",
+        message: "What is the departments name?"
+      }
+    ])
+    .then(function (answer) {
+      connection.query(
+        "INSERT INTO department SET ?",
+        { name: answer.name },
+        function (err) {
+          if (err) throw err;
+          console.log(`New ${answer.name} department created!`)
+          start();
+        })
+    })
+}
