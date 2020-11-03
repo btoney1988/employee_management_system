@@ -237,9 +237,8 @@ function viewDepartments() {
               console.table(data);
               start();
             }
-          )
-        })
+          );
+        });
 
-    }
-  )
-}
+    });
+};
