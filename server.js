@@ -73,7 +73,8 @@ function addDepartment() {
     ])
     .then(function (answer) {
       connection.query(
-        "INSERT INTO department SET ?",
+        `INSERT INTO department 
+         SET ?`,
         { name: answer.name },
         function (err) {
           if (err) throw err;
@@ -85,7 +86,9 @@ function addDepartment() {
 
 function addRole() {
   connection.query(
-    "SELECT department.name, department.id FROM employee_managmentDB.department",
+    `SELECT department.name, department.id 
+     FROM employee_managmentDB.department`,
+
     function (err, data) {
       if (err) throw err;
 
@@ -126,7 +129,8 @@ function addRole() {
           }
 
           connection.query(
-            "INSERT INTO role SET ?",
+            `INSERT INTO role 
+             SET ?`,
             {
               title: answer.title,
               salary: answer.salary,
@@ -145,7 +149,9 @@ function addRole() {
 
 function addEmployee() {
   connection.query(
-    "SELECT role.title, role.id FROM employee_managementDB.role",
+    `SELECT role.title, role.id 
+     FROM employee_managementDB.role`,
+
     function (err, data) {
       if (err) throw err;
 
@@ -184,7 +190,8 @@ function addEmployee() {
             }
           }
           connection.query(
-            "INSERT INTO employee SET ?",
+            `INSERT INTO employee 
+             SET ?`,
             {
               first_name: answer.first_name,
               last_name: answer.last_name,
@@ -203,7 +210,8 @@ function addEmployee() {
 
 function viewDepartments() {
   connection.query(
-    "SELECT department.name FROM employee_managementDB.department",
+    `SELECT department.name 
+     FROM employee_managementDB.department`,
     function (err, data) {
       if (err) throw err;
 
@@ -344,7 +352,7 @@ function updateRoles() {
                       if (err) throw err;
 
                       for (let i = 0; i < data2.length; i++) {
-                        id(`${data2[i].first_name} ${data2[i].last_name}` === answer.employee) {
+                        if (`${data2[i].first_name} ${data2[i].last_name}` === answer.employee) {
                           employee_id = data2[i].id;
                         }
                       }
