@@ -92,20 +92,6 @@ function addRole() {
       inquirer
         .prompt([
           {
-            name: "department",
-            type: "list",
-            choices: function () {
-              const departmentArr = [];
-              const departmentArrID = [];
-              for (let i = 0; i < data.length; i++) {
-                departmentArr.push(data[i].name);
-                departmentArrID.push(data[i].id);
-              }
-              return departmentArr;
-            },
-            message: "Which department?"
-          },
-          {
             name: "title",
             type: "input",
             message: "Please input role name"
@@ -115,9 +101,23 @@ function addRole() {
             type: "input",
             message: "Please input salary"
           },
+          {
+            name: "department",
+            type: "list",
+            message: "Which department?",
+            choices: function () {
+              const departmentArr = [];
+              const departmentArrID = [];
+              for (let i = 0; i < data.length; i++) {
+                departmentArr.push(data[i].name);
+                departmentArrID.push(data[i].id);
+              }
+              return departmentArr;
+            }
+          },
         ])
         .then(function (answer) {
-          const department_id = answer.department;
+          const department_id;
           for (let i = 0; i < data.length; i++) {
             if (data[i].name === answer.department) {
               department_id = data[i].id;
@@ -141,4 +141,62 @@ function addRole() {
           );
         });
     });
+};
+
+function addEmployee() {
+  connection.query(
+    "SELECT role.title, role.id FROM employee_managementDB.role",
+    function (err, data) {
+      if (err) throw err;
+
+      inquirer
+        .prompt([
+          {
+            name: "first_name",
+            type: "input",
+            message: "Please enter first name of employee."
+          },
+          {
+            name: "last_name",
+            type: "input",
+            message: "Please enter last name of employee."
+          },
+          {
+            name: "role",
+            type: "list",
+            message: "Please choose a role.",
+            choices: function () {
+              const roleArr = [];
+              for (let i = 0; i < data.length; i++) {
+                roleArr.push(data[i].title);
+              }
+              return roleArr;
+            }
+          },
+        ])
+        .then(function (answer) {
+          console.log(answer.role);
+          const role_id;
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].title === answer.role) {
+              role_id = data[i].id;
+              console.log(role_id);
+            }
+          }
+          connection.query(
+            "INSERT INTO employee SET ?",
+            {
+              first_name: answer.first_name,
+              last_name: answer.last_name,
+              role_id: role_id,
+            },
+            function (err) {
+              if (err) throw err;
+
+              console.log
+            }
+          )
+        })
+    }
+  )
 };
