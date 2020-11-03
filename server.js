@@ -284,3 +284,106 @@ function viewRoles() {
         });
     });
 };
+
+function updateRoles() {
+  connection.query(
+    `SELECT employee.first_name, employee.last_name, role.salary, role.title, role.id, department.name as "Department Name"
+     FROM employee_trackerDB.employee
+     INNER JOIN role ON employee.role_id = role.id
+     INNER JOIN department ON role.department_id = department.id`,
+
+    function (err, data) {
+      if (err) throw err;
+
+      inquirer
+        .prompt([
+          {
+            name: "employee",
+            type: "list",
+            message: "Please choose an employee to update.",
+            choices: function () {
+              const employeeArr = [];
+              for (let i = 0; i < data.length; i++) {
+                employeeArr.push(`${data[i].first_name} ${data[i].last_name}`)
+              }
+              return employeeArr;
+            }
+          }
+        ])
+        .then(function (answer) {
+          connection.query(
+            `SELECT role.title, role.id, role.salary
+             FROM employee_managementDC.role`,
+
+            function (err, data) {
+              if (err) throw err;
+
+              inquirer
+                .prompt([
+                  {
+                    name: "newRole",
+                    type: "list",
+                    message: "Please choose new role for employee",
+                    choices: function () {
+                      const roleArr = [];
+                      for (let i = 0; i < data.length; i++) {
+                        roleArr.push(data[i].title);
+                      }
+                      return roleArr;
+                    }
+                  }
+                ])
+                .then(function (answer2) {
+                  const role_id, employee_id;
+
+                  connection.query(
+                    `SELECT employee.first_name, employee.last_name, employee.id
+                     FROM employee_managementDB.employee`,
+
+                    function (err, data2) {
+                      if (err) throw err;
+
+                      for (let i = 0; i < data2.length; i++) {
+                        id(`${data2[i].first_name} ${data2[i].last_name}` === answer.employee) {
+                          employee_id = data2[i].id;
+                        }
+                      }
+                      connection.query(
+                        `SELECT role.title, role.salary, role.id
+                          FROM employee_managementDB.role`,
+
+                        function (err, data3) {
+                          if (err) throw err;
+                          for (let i = 0; i < data3.length; i++) {
+                            if (`${data3[i].title}` === answer2.newRole) {
+                              role_id = data3[i].id;
+                            }
+                          }
+
+                          connection.query(
+                            `UPDATE employee
+                             SET ?
+                             WHERE ?`,
+                            [
+                              {
+                                role_id: role_id
+                              },
+                              {
+                                id: employee_id
+                              }
+                            ],
+                            function (err) {
+                              if (err) throw err;
+                              console.log("Role Changed!");
+                              start();
+                            }
+                          )
+                        }
+                      )
+                    }
+                  )
+                })
+            });
+        });
+    });
+};
