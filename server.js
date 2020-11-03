@@ -200,3 +200,46 @@ function addEmployee() {
     }
   )
 };
+
+function viewDepartments() {
+  connection.query(
+    "SELECT department.name FROM employee_managementDB.department",
+    function (err, data) {
+      if (err) throw err;
+
+      inquirer
+        .prompt([
+          {
+            name: "department",
+            type: "list",
+            message: "Please choose a department.",
+            choices: function () {
+              const dapartmentArr = [];
+              for (let i = 0; i < data.length; i++) {
+                departmentArr.push(data[i].name);
+              }
+              return departmentArr;
+            }
+          }
+        ])
+        .then(function (answer) {
+          console.log(answer.department);
+
+          connection.query(
+            `SELECT employee.first_name, employee.last_name, role.salary, role.title, department.name as "Department Name"
+             FROM employee_managementDB.employee
+             INNER JOIN role ON employee.role_id = role.id
+             INNER JOIN department ON role.department_id = department.id
+             WHERE deparment.name LIKE "${answer.department}"`,
+            function (err, data) {
+              if (err) throw err;
+
+              console.table(data);
+              start();
+            }
+          )
+        })
+
+    }
+  )
+}
