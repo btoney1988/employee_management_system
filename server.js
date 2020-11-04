@@ -344,10 +344,8 @@ function viewEmployees() {
 function updateRoles() {
   // Connection query to select and join the correct information from the three tables
   connection.query(
-    `SELECT employee.first_name, employee.last_name, role.salary, role.title, role.id, department.name as "Department Name"
-     FROM employee_managementDB.employee
-     INNER JOIN role ON employee.role_id = role.id
-     INNER JOIN department ON role.department_id = department.id`,
+    `SELECT employee.first_name, employee.last_name
+     FROM employee_managementDB.employee`,
 
     function (err, data) {
       if (err) throw err;
